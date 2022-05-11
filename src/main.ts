@@ -7,12 +7,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Tu Localito API')
-    .setDescription('Esta API tiene como fin mostrar los distintos endpoints que estan disponibles para poder compartir informacion de nuestra empresa a los servicios tanto móviles como web que lo necesiten.')
+    .setTitle('Tu Localito SV API')
+    .setDescription(
+      'Esta API tiene como fin mostrar los distintos endpoints que estan disponibles para poder compartir informacion de nuestra empresa a los servicios tanto móviles como web que lo necesiten.',
+    )
     .setVersion('1.0')
-    .addTag('ventas')
+    .addTag('Tu Localito SV')
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1', app, document);
 
