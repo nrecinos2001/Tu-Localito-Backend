@@ -18,15 +18,15 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(@Res() res, @Body() createUserDto: CreateUserDto) {
     const createUser = await this.userService.create(createUserDto);
-    return createUser;
+    return res.status(createUser.status).send(createUser.data);
   }
 
   @Get()
-  async findAll() {
+  async findAll(@Res() res) {
     const users = await this.userService.findAll();
-    return users;
+    return res.status(users.status).send(users.data);
   }
 
   @Get(':id')
@@ -37,10 +37,12 @@ export class UserController {
 
   @Patch(':id')
   async update(
+    @Res() res,
     @Param('id') id: ObjectID,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(id, updateUserDto);
+    const userToUpdate = await this.userService.update(id, updateUserDto);
+    return res.status(userToUpdate.status).send(userToUpdate.data);
   }
 
   @Delete(':id')

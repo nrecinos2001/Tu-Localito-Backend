@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/entities/user.entity';
+import {
+  createdResponse,
+  emptyResponse,
+  notFoundResponse,
+  okResponse,
+} from 'src/common/helpers';
 import { UsersRepository } from 'src/user/repositories/user.repository';
 import { ObjectID } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,45 +20,42 @@ export class UserService {
     return true;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     const createNewUser = await this.usersRepository.createUser(createUserDto);
-    return createNewUser;
+    return createdResponse(createNewUser);
   }
 
   async findAll() {
-    const users = this.usersRepository.find();
-    return users;
+    const users = await this.usersRepository.find();
+    return okResponse(users);
   }
 
   async findOne(id: ObjectID) {
     const isUserOnDB = await this.validateExisitingUser(id);
-    if (!isUserOnDB)
-      return { status: 404, data: { status: 404, message: 'User not found' } };
+    if (!isUserOnDB) return notFoundResponse();
     const user = await this.usersRepository.findOneById(id);
-    return { status: 200, data: user };
+    return okResponse(user);
   }
 
   async update(id: ObjectID, updateUserDto: UpdateUserDto) {
     const isUserOnDB = await this.validateExisitingUser(id);
-    if (!isUserOnDB)
-      return { status: 404, data: { status: 404, message: 'User Not found' } };
+    if (!isUserOnDB) return notFoundResponse();
     // Agregar validacion si es el mismo
     // Agregar Validacion de Rol
     const userToUpdate = await this.usersRepository.updatePartialUser(
       id,
       updateUserDto,
     );
-    return { status: 404, data: userToUpdate };
+    return okResponse(userToUpdate);
   }
 
   async remove(id: ObjectID) {
     const isUserOnDB = await this.validateExisitingUser(id);
-    if (!isUserOnDB)
-      return { status: 404, data: { status: 404, message: 'User not found' } };
+    if (!isUserOnDB) return notFoundResponse();
     const user = await this.usersRepository.findOneById(id);
     // Agregar validacion si es el mismo
     // Agregar Validacion de Rol
     await this.usersRepository.remove(user);
-    return { status: 204, data: {} };
+    return emptyResponse();
   }
 }
