@@ -1,26 +1,48 @@
 import { Injectable } from '@nestjs/common';
+import { User } from 'src/entities/user.entity';
+import { UsersRepository } from 'src/user/repositories/user.repository';
+import { ObjectID } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private readonly usersRepository: UsersRepository) {}
+
+  async validateExisitingUser(id: ObjectID): Promise<boolean> {
+    const user = await this.usersRepository.findOneById(id);
+    if (!user) return false;
+    return true;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const createNewUser = await this.usersRepository.createUser(createUserDto);
+    return createNewUser;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findAll() {
+    const users = this.usersRepository.find();
+    return users;
+  }
+
+  async findOne(id: ObjectID) {
+    const isUserOnDB = await this.validateExisitingUser(id);
+    if (!isUserOnDB) return { status: 404, data: {status: 404, message: 'User not found'} };
+    const user = await this.usersRepository.findOneById(id);
+    return { status: 200, data: user };
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: ObjectID) {
+    const isUserOnDB = await this.validateExisitingUser(id);
+    if (!isUserOnDB) return { status: 404, data: { status: 404, message: 'User not found' } };
+    const user = await this.usersRepository.findOneById(id)
+    // Agregar validacion si es el mismo
+    // Agregar Validacion de Rol
+    const userDeleted = this.usersRepository.remove(user)
+    return { status: 204, data: {} };
   }
 }
