@@ -26,7 +26,7 @@ export class UserService {
   }
 
   async findAll() {
-    const users = this.usersRepository.find();
+    const users = await this.usersRepository.find();
     return okResponse(users);
   }
 
