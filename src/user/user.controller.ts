@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ObjectID } from 'typeorm';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -18,8 +19,9 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  async findOne(@Res() res, @Param('id') id: ObjectID) {
+    const user = await this.userService.findOne(id);
+    return res.status(user.status).send(user.data);
   }
 
   @Patch(':id')
@@ -28,7 +30,8 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  async remove(@Res() res, @Param('id') id: ObjectID) {
+    const deleteUser = await this.userService.remove(id);
+    return res.status(deleteUser.status).send(deleteUser.data);
   }
 }
