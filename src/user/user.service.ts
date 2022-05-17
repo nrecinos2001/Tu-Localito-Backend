@@ -7,7 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly usersRepository: UsersRepository) { }
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async validateExisitingUser(id: ObjectID): Promise<boolean> {
     const user = await this.usersRepository.findOneById(id);
@@ -39,7 +39,10 @@ export class UserService {
       return { status: 404, data: { status: 404, message: 'User Not found' } };
     // Agregar validacion si es el mismo
     // Agregar Validacion de Rol
-    const userToUpdate = await this.usersRepository.updatePartialUser(id, updateUserDto);
+    const userToUpdate = await this.usersRepository.updatePartialUser(
+      id,
+      updateUserDto,
+    );
     return { status: 404, data: userToUpdate };
   }
 
@@ -50,7 +53,7 @@ export class UserService {
     const user = await this.usersRepository.findOneById(id);
     // Agregar validacion si es el mismo
     // Agregar Validacion de Rol
-    const userDeleted = this.usersRepository.remove(user);
+    await this.usersRepository.remove(user);
     return { status: 204, data: {} };
   }
 }

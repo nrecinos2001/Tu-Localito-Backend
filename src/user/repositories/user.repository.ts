@@ -16,7 +16,10 @@ export class UsersRepository extends MongoRepository<User> {
     return user;
   }
 
-  async updatePartialUser(id: ObjectID, updateUserDto: UpdateUserDto): Promise<User> {
+  async updatePartialUser(
+    id: ObjectID,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
     const user = await this.findOne(id);
     const updatedUser = await this.save({ ...user, ...updateUserDto });
     return updatedUser;
