@@ -1,21 +1,21 @@
-import { Column, Entity, ObjectID } from "typeorm";
+import { Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 
 @Entity()
 export class User { 
-  @Column()
+  @ObjectIdColumn()
   id: ObjectID;
 
   @Column()
   name: string;
-
+  
+  @Column()
+  lastName: string;
+  
   @Column()
   email: string;
 
   @Column()
   password: string;
-
-  @Column()
-  lastName: string;
 
   @Column()
   birthDate: Date;
